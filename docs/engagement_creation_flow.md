@@ -1,54 +1,50 @@
 ```mermaid
 flowchart TD
 
-%% ======================================
-%% ENGAGEMENT CREATION + LIST VIEW FILTERS
-%% ======================================
+%% ==========================================
+%% ENGAGEMENT LIST + ENGAGEMENT CREATION FLOW
+%% ==========================================
 
-A0([Start]) --> A1[Login to GRC Tool]
-A1 --> A2[Open Internal Audit Module]
-A2 --> A3[Engagement Listing Page]
+S0([Start]) --> S1[Login to GRC Tool]
+S1 --> S2[Open Internal Audit Module]
+S2 --> S3[Engagement List View]
 
-A3 --> A4["Use Filters: Audit Plan, Date Range, Audit Type, Audit Sub-type, Created By"]
-A4 --> A5[Click Add New]
-A5 --> A6[Engagement Creation Form Opens]
+S3 --> S4[Apply Filters]
+S4 --> S4A[Filter by Audit Plan]
+S4 --> S4B[Filter by Date Range]
+S4 --> S4C[Filter by Audit Type]
+S4 --> S4D[Filter by Audit Sub-type]
+S4 --> S4E[Filter by Created By]
+S4E --> S5[Click Add New]
 
-A6 --> A7[Enter Engagement Name (Mandatory)]
-A7 --> A8{Engagement Name Unique}
-A8 -->|No| A9[Error: Name already exists, change name]
-A8 -->|Yes| A10[Select Audit Plan (Mandatory)]
-A10 --> A11[Select Audit Start Date and Audit End Date (Mandatory)]
-A11 --> A12[Select Coverage Period (Mandatory)]
+S5 --> F1[Engagement Creation Form]
 
-A12 --> A13{Auditor Type Selected}
-A13 -->|Internal| A14[Audit Firm Field Hidden]
-A13 -->|External| A15[Select Audit Firm from Master (Mandatory)]
+F1 --> F2[Enter Engagement Name]
+F2 --> V1{Engagement Name Unique}
+V1 -->|No| V1E[Show Error and Request New Name]
+V1 -->|Yes| F3[Select Audit Plan]
+F3 --> F4[Select Audit Start and End Date]
+F4 --> F5[Select Coverage Period]
 
-A14 --> A16
-A15 --> A16
+F5 --> A1{Auditor Type}
+A1 -->|Internal| A2[Audit Firm Field Hidden]
+A1 -->|External| A3[Select Audit Firm from Master]
 
-A16{Requested By Selected}
-A16 -->|No| A17[Skip Request Details]
-A16 -->|Yes| A18[Select Requested By User(s)]
-A18 --> A19[Select Department(s) (Mandatory)]
-A19 --> A20[Select Request Date (Mandatory)]
-A20 --> A21[Attach File Optional]
+A2 --> RB1{Requested By Selected}
+A3 --> RB1
 
-A17 --> A22
-A21 --> A22
+RB1 -->|No| TM1[Add Team Members and Roles]
+RB1 -->|Yes| RB2[Select Requested By Users]
+RB2 --> RB3[Select Department Mandatory]
+RB3 --> RB4[Select Request Date Mandatory]
+RB4 --> RB5[Attach File Optional]
+RB5 --> TM1
 
-A22[Click Add New to Add Team Members]
-A22 --> A23[Select Team Members + Assign Roles]
-A23 --> A24[Submit Team Modal]
-A24 --> A25[Submit Engagement Form]
-
-A25 --> A26{Mandatory Fields Filled}
-A26 -->|No| A27[Show Validation Errors + Highlight Fields]
-A26 -->|Yes| A28[Engagement Created Successfully]
-A28 --> A29[Redirect to Engagement List]
-A29 --> A30[New Engagement Visible on Top]
-A30 --> A31[Open Engagement]
-
-A31 --> Z([End])
-
+TM1 --> TM2[Submit Team Members Modal]
+TM2 --> SUB1[Submit Engagement]
+SUB1 --> SUB2[Engagement Created]
+SUB2 --> SUB3[Redirect to Engagement List]
+SUB3 --> SUB4[New Engagement Visible on Top]
+SUB4 --> SUB5[Open Engagement Details Tab]
+SUB5 --> End([End])
 ```
