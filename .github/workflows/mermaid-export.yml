@@ -27,7 +27,7 @@ jobs:
 
       - name: Export all Mermaid files to PNG
         run: |
-          for file in docs/flows/*.md; do
+          for file in Flow Chart/VM Processes Flow.md; do
             name=$(basename "$file" .md)
             mmdc -i "$file" -o "docs/exports/${name}.png" -b transparent
           done
