@@ -1,4 +1,4 @@
-name: Export Mermaid Diagrams (from Markdown)
+name: Export Mermaid Diagrams (SVG from Markdown)
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
       - name: Create export folder
         run: mkdir -p docs/exports
 
-      - name: Extract Mermaid blocks and export PNGs
+      - name: Extract Mermaid blocks and export SVGs
         shell: bash
         run: |
           set -e
@@ -42,26 +42,26 @@ jobs:
             awk -v base="$base" '
               BEGIN {inblock=0; idx=0;}
               /^```mermaid[[:space:]]*$/ {inblock=1; idx++; next}
-              /^```[[:space:]]*$/ {if(inblock==1){inblock=0} ; next}
+              /^```[[:space:]]*$/ {if(inblock==1){inblock=0}; next}
               {if(inblock==1){print > ("docs/exports/" base "_" idx ".mmd")}}
             ' "$mdfile"
 
-            # Convert extracted .mmd files into PNG
+            # Convert extracted .mmd files into SVG
             for mmd in docs/exports/"$base"_*.mmd; do
               [ -f "$mmd" ] || continue
-              out="${mmd%.mmd}.png"
+              out="${mmd%.mmd}.svg"
               echo "Exporting: $mmd -> $out"
-              mmdc -i "$mmd" -o "$out" -b transparent
+              mmdc -i "$mmd" -o "$out"
             done
           done
 
       - name: Cleanup extracted .mmd files
         run: rm -f docs/exports/*.mmd || true
 
-      - name: Commit exported images
+      - name: Commit exported SVGs
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "github-actions"
-          git add docs/exports/*.png || true
-          git commit -m "Auto-export Mermaid diagrams" || echo "No changes to commit"
+          git add docs/exports/*.svg || true
+          git commit -m "Auto-export Mermaid diagrams (SVG)" || echo "No changes to commit"
           git push
