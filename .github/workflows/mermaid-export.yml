@@ -1,4 +1,4 @@
-name: Export Mermaid Diagrams
+name: Export Mermaid Diagrams (from Markdown)
 
 on:
   push:
@@ -28,14 +28,35 @@ jobs:
       - name: Create export folder
         run: mkdir -p docs/exports
 
-      - name: Export Mermaid diagrams from flow_charts
+      - name: Extract Mermaid blocks and export PNGs
+        shell: bash
         run: |
+          set -e
           shopt -s nullglob
-          for file in flow_charts/*.md; do
-            name=$(basename "$file" .md)
-            echo "Exporting: $file -> docs/exports/${name}.png"
-            mmdc -i "$file" -o "docs/exports/${name}.png" -b transparent || exit 1
+
+          for mdfile in flow_charts/*.md; do
+            base=$(basename "$mdfile" .md)
+            echo "Processing: $mdfile"
+
+            # Extract each ```mermaid ... ``` block into numbered .mmd files
+            awk -v base="$base" '
+              BEGIN {inblock=0; idx=0;}
+              /^```mermaid[[:space:]]*$/ {inblock=1; idx++; next}
+              /^```[[:space:]]*$/ {if(inblock==1){inblock=0} ; next}
+              {if(inblock==1){print > ("docs/exports/" base "_" idx ".mmd")}}
+            ' "$mdfile"
+
+            # Convert extracted .mmd files into PNG
+            for mmd in docs/exports/"$base"_*.mmd; do
+              [ -f "$mmd" ] || continue
+              out="${mmd%.mmd}.png"
+              echo "Exporting: $mmd -> $out"
+              mmdc -i "$mmd" -o "$out" -b transparent
+            done
           done
+
+      - name: Cleanup extracted .mmd files
+        run: rm -f docs/exports/*.mmd || true
 
       - name: Commit exported images
         run: |
