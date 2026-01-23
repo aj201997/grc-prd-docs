@@ -3,7 +3,7 @@ name: Export Mermaid Diagrams
 on:
   push:
     paths:
-      - "Flow Chart/**"
+      - "Flow Chart/VM Processes Flow.md"
       - ".github/workflows/mermaid-export.yml"
 
 jobs:
