@@ -6,6 +6,9 @@ on:
       - "flow_charts/**"
       - ".github/workflows/mermaid-export.yml"
 
+permissions:
+  contents: write
+
 jobs:
   export:
     runs-on: ubuntu-latest
@@ -22,18 +25,22 @@ jobs:
       - name: Install Mermaid CLI
         run: npm install -g @mermaid-js/mermaid-cli
 
-      - name: Export all Mermaid files to PNG
+      - name: Create export folder
+        run: mkdir -p docs/exports
+
+      - name: Export Mermaid diagrams from flow_charts
         run: |
-          mkdir -p docs/exports
+          shopt -s nullglob
           for file in flow_charts/*.md; do
             name=$(basename "$file" .md)
-            mmdc -i "$file" -o "docs/exports/${name}.png" -b transparent
+            echo "Exporting: $file -> docs/exports/${name}.png"
+            mmdc -i "$file" -o "docs/exports/${name}.png" -b transparent || exit 1
           done
 
       - name: Commit exported images
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "github-actions"
-          git add docs/exports/*.png
+          git add docs/exports/*.png || true
           git commit -m "Auto-export Mermaid diagrams" || echo "No changes to commit"
           git push
