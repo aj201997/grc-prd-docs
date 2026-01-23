@@ -3,7 +3,7 @@ name: Export Mermaid Diagrams
 on:
   push:
     paths:
-      - "Flow Chart/VM Processes Flow.md"
+      - "flow_charts/**"
       - ".github/workflows/mermaid-export.yml"
 
 jobs:
@@ -22,12 +22,10 @@ jobs:
       - name: Install Mermaid CLI
         run: npm install -g @mermaid-js/mermaid-cli
 
-      - name: Create export folder
-        run: mkdir -p docs/exports
-
       - name: Export all Mermaid files to PNG
         run: |
-          for file in Flow Chart/VM Processes Flow.md; do
+          mkdir -p docs/exports
+          for file in flow_charts/*.md; do
             name=$(basename "$file" .md)
             mmdc -i "$file" -o "docs/exports/${name}.png" -b transparent
           done
